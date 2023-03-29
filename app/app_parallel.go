@@ -1,7 +1,6 @@
 package app
 
 import (
-	"encoding/hex"
 	"sort"
 	"strings"
 
@@ -117,11 +116,6 @@ func getTxFeeAndFromHandler(ak auth.AccountKeeper) sdk.GetTxFeeAndFromHandler {
 			//	msg.CalFromAndToForPara()
 			//}
 
-		} else if feeTx, ok := tx.(authante.FeeTx); ok {
-			fee = feeTx.GetFee()
-			feePayer := feeTx.FeePayer(ctx)
-			feePayerAcc := ak.GetAccount(ctx, feePayer)
-			from = hex.EncodeToString(feePayerAcc.GetAddress())
 		}
 
 		return
