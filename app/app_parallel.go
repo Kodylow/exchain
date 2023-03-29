@@ -96,9 +96,9 @@ func getTxFeeHandler() sdk.GetTxFeeHandler {
 
 // getTxFeeAndFromHandler get tx fee and from
 func getTxFeeAndFromHandler(ak auth.AccountKeeper) sdk.GetTxFeeAndFromHandler {
-	return func(ctx sdk.Context, tx sdk.Tx) (fee sdk.Coins, isEvm bool, from string, to string, err error) {
+	return func(ctx sdk.Context, tx sdk.Tx) (fee sdk.Coins, canParaTx bool, from string, to string, err error) {
 		if evmTx, ok := tx.(*evmtypes.MsgEthereumTx); ok {
-			isEvm = true
+			canParaTx = true
 			err = evmTxVerifySigHandler(ctx.ChainID(), ctx.BlockHeight(), evmTx)
 			if err != nil {
 				return
@@ -113,15 +113,14 @@ func getTxFeeAndFromHandler(ak auth.AccountKeeper) sdk.GetTxFeeAndFromHandler {
 			}
 		} else if feeTx, ok := tx.(authante.FeeTx); ok {
 			fee = feeTx.GetFee()
-			//feePayer := feeTx.FeePayer(ctx)
-			//feePayerAcc := ak.GetAccount(ctx, feePayer)
-			//from = hex.EncodeToString(feePayerAcc.GetAddress())
-
 			if stdTx, ok := tx.(*auth.StdTx); ok {
-				if msg, ok := stdTx.Msgs[0].(interface{ CalFromAndToForPara() }); ok {
-					msg.CalFromAndToForPara()
+				if msg, ok := stdTx.Msgs[0].(interface{ CalFromAndToForPara() (bool, string, string) }); ok {
+					if parseOk, sender, contract := msg.CalFromAndToForPara(); parseOk {
+						canParaTx = true
+						from = sender
+						to = contract
+					}
 				}
-
 			}
 		}
 

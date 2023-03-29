@@ -3,7 +3,6 @@ package types
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	ethcmm "github.com/ethereum/go-ethereum/common"
 	"strings"
 
@@ -309,16 +308,13 @@ func (msg MsgIBCCloseChannel) GetSigners() []sdk.AccAddress {
 	return nil
 }
 
-func (msg *MsgExecuteContract) CalFromAndToForPara() {
+func (msg *MsgExecuteContract) CalFromAndToForPara() (bool, string, string) {
 
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
-		panic(err)
-	}
-	contractAddr, err := sdk.AccAddressFromBech32(msg.Contract)
-	if err != nil {
-		panic(err)
+		return false, "", ""
 	}
 
-	fmt.Println("msg.Sender", ethcmm.BytesToAddress(sender), ethcmm.BytesToAddress(contractAddr))
+	// msg.Contract 32byte
+	return true, strings.ToLower(ethcmm.BytesToAddress(sender).String()[2:]), msg.Contract
 }
