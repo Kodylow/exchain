@@ -100,7 +100,6 @@ func getTxFeeHandler() sdk.GetTxFeeHandler {
 // getTxFeeAndFromHandler get tx fee and from
 func getTxFeeAndFromHandler(ak auth.AccountKeeper) sdk.GetTxFeeAndFromHandler {
 	return func(ctx sdk.Context, tx sdk.Tx) (fee sdk.Coins, isEvm bool, from string, to string, err error) {
-		fmt.Println("----", reflect.TypeOf(tx))
 		if evmTx, ok := tx.(*evmtypes.MsgEthereumTx); ok {
 			isEvm = true
 			err = evmTxVerifySigHandler(ctx.ChainID(), ctx.BlockHeight(), evmTx)
@@ -115,6 +114,9 @@ func getTxFeeAndFromHandler(ak auth.AccountKeeper) sdk.GetTxFeeAndFromHandler {
 			if evmTx.To() != nil {
 				to = strings.ToLower(evmTx.To().String()[2:])
 			}
+		} else if stdTx, ok := tx.(*auth.StdTx); ok {
+			fmt.Println("stdTx msg[0]", stdTx.From, reflect.TypeOf(stdTx.Msgs[0]))
+
 		} else if feeTx, ok := tx.(authante.FeeTx); ok {
 			fee = feeTx.GetFee()
 			feePayer := feeTx.FeePayer(ctx)
