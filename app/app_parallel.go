@@ -113,7 +113,7 @@ func getTxFeeAndFromHandler(ak auth.AccountKeeper) sdk.GetTxFeeAndFromHandler {
 			}
 		} else if feeTx, ok := tx.(authante.FeeTx); ok {
 			fee = feeTx.GetFee()
-			if stdTx, ok := tx.(*auth.StdTx); ok {
+			if stdTx, ok := tx.(*auth.StdTx); ok && len(stdTx.Msgs) == 1 { // only support one message
 				if msg, ok := stdTx.Msgs[0].(interface{ CalFromAndToForPara() (bool, string, string) }); ok {
 					if parseOk, sender, contract := msg.CalFromAndToForPara(); parseOk {
 						canParaTx = true
@@ -123,7 +123,6 @@ func getTxFeeAndFromHandler(ak auth.AccountKeeper) sdk.GetTxFeeAndFromHandler {
 				}
 			}
 		}
-
 		return
 	}
 }
