@@ -2,6 +2,8 @@ package app
 
 import (
 	"encoding/hex"
+	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -98,6 +100,7 @@ func getTxFeeHandler() sdk.GetTxFeeHandler {
 // getTxFeeAndFromHandler get tx fee and from
 func getTxFeeAndFromHandler(ak auth.AccountKeeper) sdk.GetTxFeeAndFromHandler {
 	return func(ctx sdk.Context, tx sdk.Tx) (fee sdk.Coins, isEvm bool, from string, to string, err error) {
+		fmt.Println("----", reflect.TypeOf(tx))
 		if evmTx, ok := tx.(*evmtypes.MsgEthereumTx); ok {
 			isEvm = true
 			err = evmTxVerifySigHandler(ctx.ChainID(), ctx.BlockHeight(), evmTx)
