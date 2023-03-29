@@ -111,11 +111,23 @@ func getTxFeeAndFromHandler(ak auth.AccountKeeper) sdk.GetTxFeeAndFromHandler {
 			if evmTx.To() != nil {
 				to = strings.ToLower(evmTx.To().String()[2:])
 			}
-		} else if _, ok := tx.(*auth.StdTx); ok {
+		} else if stdTx, ok := tx.(*auth.StdTx); ok {
 			//if msg, ok := stdTx.Msgs[0].(interface{ CalFromAndToForPara() }); ok {
 			//	msg.CalFromAndToForPara()
 			//}
 
+		} else if feeTx, ok := tx.(authante.FeeTx); ok {
+			fee = feeTx.GetFee()
+			//feePayer := feeTx.FeePayer(ctx)
+			//feePayerAcc := ak.GetAccount(ctx, feePayer)
+			//from = hex.EncodeToString(feePayerAcc.GetAddress())
+
+			if stdTx, ok := tx.(*auth.StdTx); ok {
+				if msg, ok := stdTx.Msgs[0].(interface{ CalFromAndToForPara() }); ok {
+					msg.CalFromAndToForPara()
+				}
+
+			}
 		}
 
 		return
