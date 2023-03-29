@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	ethcmm "github.com/ethereum/go-ethereum/common"
 	"strings"
 
 	sdk "github.com/okex/exchain/libs/cosmos-sdk/types"
@@ -309,5 +310,15 @@ func (msg MsgIBCCloseChannel) GetSigners() []sdk.AccAddress {
 }
 
 func (msg *MsgExecuteContract) CalFromAndToForPara() {
-	fmt.Println("msg.Sender", msg.Sender, msg.Contract)
+
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	contractAddr, err := sdk.AccAddressFromBech32(msg.Contract)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("msg.Sender", ethcmm.BytesToAddress(sender), ethcmm.BytesToAddress(contractAddr))
 }
