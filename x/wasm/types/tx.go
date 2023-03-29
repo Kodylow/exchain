@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 
 	sdk "github.com/okex/exchain/libs/cosmos-sdk/types"
@@ -305,4 +306,8 @@ func (msg MsgIBCCloseChannel) GetSignBytes() []byte {
 
 func (msg MsgIBCCloseChannel) GetSigners() []sdk.AccAddress {
 	return nil
+}
+
+func (msg *MsgExecuteContract) CalFromAndToForPara() {
+	fmt.Println("msg.Sender", msg.Sender, msg.Contract)
 }

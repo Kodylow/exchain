@@ -2,8 +2,6 @@ package app
 
 import (
 	"encoding/hex"
-	"fmt"
-	"reflect"
 	"sort"
 	"strings"
 
@@ -115,7 +113,9 @@ func getTxFeeAndFromHandler(ak auth.AccountKeeper) sdk.GetTxFeeAndFromHandler {
 				to = strings.ToLower(evmTx.To().String()[2:])
 			}
 		} else if stdTx, ok := tx.(*auth.StdTx); ok {
-			fmt.Println("stdTx msg[0]", stdTx.From, reflect.TypeOf(stdTx.Msgs[0]))
+			if msg, ok := stdTx.Msgs[0].(interface{ CalFromAndToForPara() }); ok {
+				msg.CalFromAndToForPara()
+			}
 
 		} else if feeTx, ok := tx.(authante.FeeTx); ok {
 			fee = feeTx.GetFee()
